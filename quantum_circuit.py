@@ -2,9 +2,18 @@ import numpy as np
 from numpy.random import choice
 
 class gates:
-    single_q = {'x':np.array([[0, 1], [1, 0]]),
-                      'h':np.array([[1/np.sqrt(2), 1/np.sqrt(2)], [1/np.sqrt(2), -1/np.sqrt(2)]])}
-    multi_q = {'cx':np.array([[0, 1], [1, 0]])}
+    single_q = {
+                'x': np.array([[0, 1], [1, 0]]),
+                'y': np.zeros((2, 2), dtype=np.complex_) + [[0, complex(0, -1)], [complex(0, 1), 0]],
+                'z': np.array([[1, 0], [0, -1]]),
+                'h': np.array([[1/np.sqrt(2), 1/np.sqrt(2)], [1/np.sqrt(2), -1/np.sqrt(2)]]),
+                }
+    multi_q = {
+                'cx': np.array([[0, 1], [1, 0]]),
+                'cy': np.zeros((2, 2), dtype=np.complex_) + [[0, complex(0, -1)], [complex(0, 1), 0]],
+                'cz': np.array([[1, 0], [0, -1]])
+                }
+    parameter_q = ['u3']
 
 class matrices:
     I = np.identity(2)
@@ -16,11 +25,20 @@ class quantum_circuit:
         self.num_qubits = num_qubits
         self.state = np.zeros_like(np.arange(2**num_qubits))
         self.state[0]=1
+        self.params = []
         self.circuit = circuit
 
     def x(self, target):
         x = { "gate": "x", "target": [target] }
         self.circuit.append(x)
+
+    def y(self, target):
+        y = { "gate": "y", "target": [target] }
+        self.circuit.append(y)
+
+    def z(self, target):
+        z = { "gate": "z", "target": [target] }
+        self.circuit.append(z)
 
     def h(self, target):
         h = { "gate": "h", "target": [target] }
@@ -30,7 +48,19 @@ class quantum_circuit:
         cx = { "gate": "cx", "target": [control, target] }
         self.circuit.append(cx)
 
-    def get_operator(self, gate_unitary, target_qubits):
+    def cy(self, control, target):
+        cy = { "gate": "cy", "target": [control, target] }
+        self.circuit.append(cy)
+
+    def cz(self, control, target):
+        cz = { "gate": "cz", "target": [control, target] }
+        self.circuit.append(cz)
+
+    def u3(self, target, params):
+        u3 = { "gate": "u3", "target": [target], "params" : params}
+        self.circuit.append(u3)
+
+    def get_operator(self, gate_unitary, target_qubits, parameters = None):
         if gate_unitary in gates.single_q:
             target = target_qubits[0]
             operator = 1
@@ -56,15 +86,40 @@ class quantum_circuit:
                     operator_a = np.kron(operator_a, matrices.I)
                     operator_b = np.kron(operator_b, matrices.I)
             return operator_a + operator_b
+        elif gate_unitary in gates.parameter_q:
+            target = target_qubits[0]
+            phi = parameters['phi']
+            theta = parameters['theta']
+            lamb = parameters['lambda']
+            if phi in self.params:
+                phi = self.params[phi]
+            if theta in self.params:
+                theta = self.params[theta]
+            if lamb in self.params:
+                lamb = self.params[lamb]
+            param_gate = np.array([[np.cos(theta/2) , -np.e**(complex(0,1)*lamb)*np.sin(theta/2)],
+                                   [np.e**(complex(0,1)*phi)*np.sin(theta/2) , np.e**(complex(0,1)*(phi+lamb))*np.cos(theta/2)]])
+            operator = 1
+            for i in range(self.num_qubits):
+                if i == target_qubits[0]:
+                    operator = np.kron(operator, param_gate)
+                else:
+                    operator = np.kron(operator, matrices.I)
+            return operator
     
-    def run(self):
+    def run(self, params = None, initial_state = None):
+        if initial_state != None:
+            self.state = np.array(initial_state)
+        if params != None:
+            self.params = params
         for operation in self.circuit:
             gate, target = operation['gate'], operation['target']
-            operator = self.get_operator(gate, target)
+            params = operation.get('params')
+            operator = self.get_operator(gate, target, params)
             self.state = np.dot(operator, self.state)
 
     def measure_all(self):
-        return "{0:b}".format(choice(range(len(self.state)), 1, p=np.square(self.state))[0]).zfill(self.num_qubits)
+        return "{0:b}".format(choice(range(len(self.state)), 1, p=np.square(abs(self.state)))[0]).zfill(self.num_qubits)
     
     def get_counts(self, num_shots):
         counts = {}
@@ -75,17 +130,3 @@ class quantum_circuit:
             else:
                 counts[measurement] += 1 
         return counts
-
-c = my_circuit = [
-{ "gate": "x", "target": [0] },
-{ 'gate': 'cx', 'target': [0,2] },
-{ 'gate': 'h', 'target':[2]}
-]
-
-qc = quantum_circuit(4)
-qc.x(0)
-qc.cx(0,2)
-qc.h(2)
-qc.run()
-counts = qc.get_counts(1000)
-print(counts)
