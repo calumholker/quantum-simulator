@@ -11,10 +11,11 @@ The simulator implements the following:
 - Runs the quantum circuit and for each gate: 
     * Find the operator matrix using the universal operator function
     * Applies it to the state
-- Performs a measurement perform multi-shot measurement of all qubits using weighted random technique
-Examples of the implementation are given in the file _main.py_
+- Performs a measurement perform multi-shot measurement of all qubits using weighted random technique <br/><br/>
+Furthermore the program uses the [__UNIVERSAL OPERATOR FUNCTION__](https://github.com/quantastica/qosf-mentorship/blob/master/qosf-simulator-task-additional-info.pdf)
+Examples of the implementation are given in the file _main.py_ <br/>
 
-## Use of the Simulation
+## Use of the Simulator
 The simulation class is imported into a python file as below:
 ```python
 from quantum_simulator import quantum_circuit
@@ -38,10 +39,10 @@ The simulation allows the following quantum gates with any number of targets, or
 | CU3   | mu3  | (Multi) Controlled U3 | Controls, Targets, Parameters |
 
 ### Creation of the Circuit
-__Note that this simulator uses big endian encoding__
+__Note that this simulator uses big endian encoding__ <br/>
 The circuit can be created in one of two ways:
 - Defining the circuit initially as an array of dictionaries
-- Using the built in functions to append a gate to the circuit
+- Using the built in functions to append a gate to the circuit <br/><br/>
 For the first option a sample circuit is provided below:
 ```python
 my_circuit = [
@@ -51,9 +52,9 @@ my_circuit = [
 ]
 ```
 As you can see from this example, there are three main types of gate inputs:
-- __single qubit gates__ _('x', 'y', 'z', 'h')_ do not require any controls, however an empty controls list must be input
-- __multi control quibit gates__ _('cx','cy','cz')_ require arrays of both controls and targets
-- __parameter qubit gates__ _('u3')_ require arrays of controls, targets and parameters, with the parameters defined as above. If using global variables (as theta and phi are in the example), these must be defined later when running the circuit <br/>
+- __single qubit gates__ _( 'x' , 'y' , 'z' , 'h' )_ do not require any controls, __however an empty controls list must be input__
+- __multi control quibit gates__ _( 'cx' , 'cy' , 'cz' )_ require arrays of both controls and targets
+- __parameter qubit gates__ _( 'u3' )_ require arrays of controls, targets and parameters, with the parameters defined as above. If using global variables (as theta and phi are in the example), these must be defined later when running the circuit <br/><br/>
 The second option is to use the built in functions to append gates, as in the example below:
 ```python
 qc.x([1,3])
@@ -76,3 +77,10 @@ The counts produces an ouput as below:
 ```
 {'1111': 503, '1110': 497}
 ```
+
+## Notes
+Versions is a folder containing a workbook used to test functions, and previous version of the simulator
+
+## References
+QOSF Task - [https://github.com/quantastica/qosf-mentorship/blob/master/qosf-simulator-task.ipynb](https://github.com/quantastica/qosf-mentorship/blob/master/qosf-simulator-task.ipynb) <br/>
+Universal Operator Function - [https://github.com/quantastica/qosf-mentorship/blob/master/qosf-simulator-task-additional-info.pdf](https://github.com/quantastica/qosf-mentorship/blob/master/qosf-simulator-task-additional-info.pdf)
