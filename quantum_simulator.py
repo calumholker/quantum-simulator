@@ -151,5 +151,5 @@ class quantum_circuit:
         self.circuit.append(u3)
 
     def mu3(self, controls, targets, params):
-        multi = { "matrix": "u3" ,"controls": controls, "targets": targets, "params": params}
+        multi = { "gate": "u3" ,"controls": controls, "targets": targets, "params": params}
         self.circuit.append(multi)
