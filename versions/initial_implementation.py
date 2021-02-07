@@ -1,3 +1,10 @@
+"""
+********NOT FINAL CODE********
+INITIAL VERSION OF QUANTUM SIMULATOR CLASS USED FOR TESTING FINAL VERSION
+Working version with single qubit (x), two qubit (cx), u3 and multi control quantum gates implemented seperately
+"""
+
+
 import numpy as np
 from numpy.random import choice
 
