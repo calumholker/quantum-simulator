@@ -15,6 +15,6 @@ The simulator implements the following:
 
 ## Use of the Simulation
 The simulation class is imported into a python file as below:
-'''python
+```python
 from quantum_simulator import quantum_circuit
-'''
+```
