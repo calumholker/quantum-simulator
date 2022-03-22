@@ -1,6 +1,5 @@
 # Quantum Circuit Simulator
-This project is an implementation of a quantum computer simulator. 
-This was written for my submission to [Quantum Open Source Foundation's Quantum Computing Mentorship](https://github.com/quantastica/qosf-mentorship/blob/master/qosf-simulator-task.ipynb)
+This project is an implementation of a basic quantum computer simulator. 
 
 ## Overview
 The only requirement for the running of the simulation is the installation of the Python3 package __Numpy__.
